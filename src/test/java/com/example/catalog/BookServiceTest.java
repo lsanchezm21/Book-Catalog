@@ -2,6 +2,7 @@ package com.example.catalog;
 
 import com.example.catalog.dto.BookRequestDTO;
 import com.example.catalog.dto.BookResponseDTO;
+import com.example.catalog.service.BookNotFoundException;
 import com.example.catalog.service.BookService;
 import org.junit.jupiter.api.Test;
 
@@ -46,5 +47,20 @@ class BookServiceTest {
         service.delete(created.id());
 
         assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void getThrowsWhenBookDoesNotExist() {
+        assertThrows(BookNotFoundException.class, () -> service.get(99L));
+    }
+
+    @Test
+    void updateThrowsWhenBookDoesNotExist() {
+        assertThrows(BookNotFoundException.class, () -> service.update(99L, request));
+    }
+
+    @Test
+    void deleteThrowsWhenBookDoesNotExist() {
+        assertThrows(BookNotFoundException.class, () -> service.delete(99L));
     }
 }

@@ -1,5 +1,9 @@
 package com.example.catalog.web;
 
+import com.example.catalog.service.BookNotFoundException;
+import com.example.catalog.service.InvalidBookException;
+import org.springframework.http.HttpStatus;
+
 import com.example.catalog.dto.BookRequestDTO;
 import com.example.catalog.dto.BookResponseDTO;
 import com.example.catalog.service.BookService;
@@ -46,5 +50,15 @@ public class BookController {
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleNotFound() {
+    }
+
+    @ExceptionHandler(InvalidBookException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleInvalid() {
     }
 }

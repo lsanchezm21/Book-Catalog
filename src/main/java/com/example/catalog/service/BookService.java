@@ -21,10 +21,15 @@ public class BookService {
     }
 
     public BookResponseDTO get(Long id) {
-        return toResponse(books.get(id));
+        Book book = books.get(id);
+        if (book == null) {
+            throw new BookNotFoundException("Book not found: " + id);
+        }
+        return toResponse(book);
     }
 
     public BookResponseDTO create(BookRequestDTO request) {
+        validate(request);
         Long id = nextId.getAndIncrement();
         Book book = new Book(id, request.isbn(), request.title(), request.author(), request.year());
         books.put(id, book);
@@ -32,13 +37,38 @@ public class BookService {
     }
 
     public BookResponseDTO update(Long id, BookRequestDTO request) {
+        validate(request);
+        if (!books.containsKey(id)) {
+            throw new BookNotFoundException("Book not found: " + id);
+        }
         Book book = new Book(id, request.isbn(), request.title(), request.author(), request.year());
         books.put(id, book);
         return toResponse(book);
     }
 
     public void delete(Long id) {
-        books.remove(id);
+        if (books.remove(id) == null) {
+            throw new BookNotFoundException("Book not found: " + id);
+        }
+    }
+
+    private void validate(BookRequestDTO request) {
+        if (isBlank(request.isbn())) {
+            throw new InvalidBookException("isbn must not be blank");
+        }
+        if (isBlank(request.title())) {
+            throw new InvalidBookException("title must not be blank");
+        }
+        if (isBlank(request.author())) {
+            throw new InvalidBookException("author must not be blank");
+        }
+        if (request.year() < 0) {
+            throw new InvalidBookException("year must not be negative");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     private BookResponseDTO toResponse(Book book) {
