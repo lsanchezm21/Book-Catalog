@@ -1,5 +1,8 @@
 package com.example.catalog.web;
 
+import org.springframework.http.ResponseEntity;
+import java.net.URI;
+
 import com.example.catalog.dto.BookRequestDTO;
 import com.example.catalog.dto.BookResponseDTO;
 import com.example.catalog.model.Book;
@@ -28,11 +31,13 @@ public class BookController {
     }
 
     @PostMapping
-    public BookResponseDTO create(@RequestBody BookRequestDTO request) {
+    public ResponseEntity<BookResponseDTO> create(@RequestBody BookRequestDTO request) {
         Long id = nextId.getAndIncrement();
         Book book = new Book(id, request.isbn(), request.title(), request.author(), request.year());
         books.put(id, book);
-        return toResponse(book);
+        return ResponseEntity
+                .created(URI.create("/books/" + id))
+                .body(toResponse(book));
     }
 
     @PutMapping("/{id}")
@@ -43,8 +48,9 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         books.remove(id);
+        return ResponseEntity.noContent().build();
     }
 
     private BookResponseDTO toResponse(Book book) {
