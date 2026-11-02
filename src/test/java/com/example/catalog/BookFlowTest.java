@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class BookCheckpoint03Test {
+class BookFlowTest {
     @Autowired MockMvc mvc;
     private String create() throws Exception {
         return mvc.perform(post("/books").contentType("application/json").content("""
